@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "Node",
+    "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@assets-sprites/*": ["playground/assets/images/sprite-sheet/*"],
+      "@assets-tile-sets/*": ["playground/assets/images/tile-sets/*"],
+      "@assets-prefabs/*": ["playground/assets/prefabs/*"],
+      "@assets-audios/*": ["playground/assets/audios/*"],
+      "@assets-scripts/*": ["playground/assets/scripts/*"],
+      "@assets-styles/*": ["playground/assets/styles/*"],
+      "@engine-editor/*": ["engine/editor/*"],
+      "@engine-runtime/*": ["engine/runtime/*"],
+      "@engine-config": ["engine/runtime/config/config.json"]
+    }
+  },
+  "include": ["src"]
+}
