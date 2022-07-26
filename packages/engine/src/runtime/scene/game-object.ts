@@ -1,11 +1,13 @@
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { IComponent } from "@engine-runtime/component/component.h";
+import { GameObjectLayer } from "@engine-runtime/scene/game-object-layer";
 
 export class GameObject {
   readonly Name: string;
 
   private _gridPosition: Vector2;
   private _components: Map<string, IComponent>;
+  private _layer: GameObjectLayer;
 
   get GridPosition(): Vector2 {
     return this._gridPosition;
@@ -19,8 +21,20 @@ export class GameObject {
     return this._components;
   }
 
-  constructor(name: string, gridPosition: Vector2 = new Vector2()) {
+  get Layer(): GameObjectLayer {
+    return this._layer;
+  }
+  set Layer(layer: GameObjectLayer) {
+    this._layer = layer;
+  }
+
+  constructor(
+    name: string,
+    layer: GameObjectLayer = GameObjectLayer.STATIC,
+    gridPosition: Vector2 = new Vector2()
+  ) {
     this.Name = GameObject.FormatName(name);
+    this._layer = layer;
     this._components = new Map<string, IComponent>();
     this._gridPosition = gridPosition;
   }

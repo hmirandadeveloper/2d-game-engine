@@ -1,19 +1,36 @@
 import { Engine } from "@engine-runtime/engine";
+import { CharacterFactory } from "@engine-runtime/factory/character.factory";
 import { GameObject } from "@engine-runtime/scene/game-object";
 import { SceneLoader } from "@engine-runtime/scene/loader/scene-loader";
 import { SceneController } from "@engine-runtime/scene/scene-controller";
+import { Config } from "config/config";
 
-// TODO: New Feature (Core Funcionality): v1.2.0
 export class EngineRuntimeFacade {
-  public static readonly ENGINE: Engine = Engine.GetInstance();
+  private static _INSTANCE: EngineRuntimeFacade;
 
-  public static readonly SCENE_CONTROLLER: SceneController =
-    Engine.GetInstance().SceneController;
+  public readonly Engine: Engine;
+  public readonly SceneController: SceneController;
+  public readonly SceneLoader: SceneLoader;
+  public readonly CharacterFactory: CharacterFactory;
+  public readonly Config: Config;
 
-  public static readonly SCENE_LOADER: SceneLoader =
-    SceneController.SCENE_LOADER;
+  private constructor() {
+    this.Engine = Engine.GetInstance();
+    this.SceneController = SceneController.GetInstance();
+    this.SceneLoader = SceneLoader.GetInstance();
+    this.CharacterFactory = CharacterFactory.GetInstance();
+    this.Config = Config.GetInstance();
+  }
 
-  public static AddGameObjectToCurrentScene(gameObject: GameObject): void {
-    EngineRuntimeFacade.SCENE_CONTROLLER.CurrentScene.AddGameObject(gameObject);
+  public static GetInstance(): EngineRuntimeFacade {
+    if (!EngineRuntimeFacade._INSTANCE) {
+      EngineRuntimeFacade._INSTANCE = new EngineRuntimeFacade();
+    }
+
+    return EngineRuntimeFacade._INSTANCE;
+  }
+
+  public AddGameObjectToCurrentScene(gameObject: GameObject): void {
+    this.SceneController.CurrentScene.AddGameObject(gameObject);
   }
 }

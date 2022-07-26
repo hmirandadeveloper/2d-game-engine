@@ -2,8 +2,9 @@
     "name": "main_scene",
     "map": "salon-mp",
     "backgroundAudioFileName": "background_music-au",
+    "tileSetKeyNames": ["hugo_boy", "hugo_zombie", "builing_001"],
     "characters": [
-        {"key": "hugo_boy", "position": {"x": 0, "y": 0}, "isPlayer": true},
-        {"key": "hugo_zombie", "position": {"x": 5, "y": 2}, "isPlayer": false}
+        {"key": "hugo_boy", "tileSetKey": 0, "position": {"x": 0, "y": 0}, "isPlayer": true},
+        {"key": "hugo_zombie", "tileSetKey": 1, "position": {"x": 5, "y": 2}, "isPlayer": false}
     ]
 }

@@ -1,4 +1,3 @@
-import config from "@engine-config";
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { GameObject } from "@engine-runtime/scene/game-object";
 import { GameInput } from "@engine-runtime/component/input/input";
@@ -52,8 +51,8 @@ export class Mover extends BaseComponent {
     this.MaxTravelDistance = 1;
     this._moveAxis = new Vector2();
 
-    this._maxSpeed = config.movement.maxSpeed / 1000;
-    this._acceleration = config.movement.acceleration / 1000;
+    this._maxSpeed = this.Config.Parameters.movement.maxSpeed / 1000;
+    this._acceleration = this.Config.Parameters.movement.acceleration / 1000;
     this._currentSpeed = 0;
     this._travelledDistance = 0;
   }

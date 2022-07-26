@@ -1,21 +1,20 @@
-import config from "@engine-config";
 import { GameObject } from "./game-object";
 import { Camera } from "@engine-runtime/camera";
 import { Vector2 } from "@engine-runtime/utils/vector2";
+import { EngineElement } from "@engine-runtime/engine-element";
 import { TileSet } from "@engine-runtime/component/render/tile-set";
 import { Renderer } from "@engine-runtime/component/render/renderer";
-import { RenderOrchestrator } from "../component/render/render-orchestrator";
+import { RenderOrchestrator } from "@engine-runtime/component/render/render-orchestrator";
 
-export class Scene {
+export class Scene extends EngineElement {
   static readonly EMPTY_SCENE: Scene = new Scene("Empty");
-  static readonly RENDER_ORCHESTRATOR: RenderOrchestrator =
-    RenderOrchestrator.GetInstance();
-  static readonly CAMERA: Camera = Camera.GetInstance();
 
   readonly Name: string;
   readonly TileSets: Map<string, TileSet>;
   readonly GameObjects: Map<string, GameObject>;
   readonly BackgroundAudio: HTMLAudioElement;
+  readonly Camera: Camera;
+  readonly RenderOrchestrator: RenderOrchestrator;
 
   private _tilesSetup: Set<Promise<void>>;
   private _playerKey: string;
@@ -33,10 +32,13 @@ export class Scene {
   }
 
   constructor(name: string, playerKey: string = "") {
+    super();
     this.Name = Scene.FormatName(name);
     this.TileSets = new Map<string, TileSet>();
     this.GameObjects = new Map<string, GameObject>();
     this.BackgroundAudio = new Audio();
+    this.Camera = Camera.GetInstance();
+    this.RenderOrchestrator = RenderOrchestrator.GetInstance();
 
     this._tilesSetup = new Set<Promise<void>>();
     this._playerKey = playerKey;
@@ -46,6 +48,14 @@ export class Scene {
   public AddTileSet(tileSet: TileSet): void {
     this.TileSets.set(tileSet.Name, tileSet);
     this._tilesSetup.add(tileSet.Setup());
+  }
+
+  public GetTileSet(key: string): TileSet {
+    if (!this.TileSets.has(key)) {
+      throw new Error("Invalid TileSet key");
+    }
+
+    return <TileSet>this.TileSets.get(key);
   }
 
   public AddGameObject(gameObject: GameObject): void {
@@ -65,13 +75,14 @@ export class Scene {
       throw new Error("No player defined");
     }
 
-    Scene.CAMERA.Target = <GameObject>(
+    this.Camera.Target = <GameObject>(
       this.GameObjects.get(GameObject.FormatName(this._playerKey))
     );
 
     if (this.BackgroundAudio.src) {
       this.BackgroundAudio.loop = true;
-      this.BackgroundAudio.volume = config.scene.backgroundAudio.volume;
+      this.BackgroundAudio.volume =
+        this.Config.Parameters.scene.backgroundAudio.volume;
       this.BackgroundAudio.autoplay = true;
     }
     // Load all static positions (available/collision [?] - positions)
@@ -80,23 +91,23 @@ export class Scene {
   public Update(): void {
     let renderables: Array<Renderer> = new Array<Renderer>();
     this.GameObjects.forEach((gameObject) => {
-      gameObject.Update();
-      if (gameObject.Components.has(Renderer.name)) {
-        renderables.push(<Renderer>gameObject.Components.get(Renderer.name));
+      if (!this.Camera.IsOccluded(gameObject.GridPosition)) {
+        gameObject.Update();
+        if (gameObject.Components.has(Renderer.name)) {
+          renderables.push(<Renderer>gameObject.Components.get(Renderer.name));
+        }
       }
     });
 
-    Scene.RENDER_ORCHESTRATOR.LoadRenderables(renderables);
-    Scene.RENDER_ORCHESTRATOR.Update();
-    Scene.CAMERA.Update();
+    this.RenderOrchestrator.LoadRenderables(renderables);
+    this.RenderOrchestrator.Update();
+    this.Camera.Update();
   }
 
   public static FormatName(name: string): string {
     return `sc_${name.toLocaleLowerCase()}`;
   }
 
-  // TODO: New Feature (Core Funcionality): v1.2.0
-  // private LoadAvailablePositions(): void {
-
-  // }
+  // TODO: New Feature (Core Funcionality): v1.3.0
+  // private LoadAvailablePositions(): void {}
 }

@@ -2,7 +2,7 @@
 import { GameObject } from "@engine-runtime/scene/game-object";
 import { BaseComponent } from "@engine-runtime/component/base-component";
 
-// TODO: New Feature (Core Funcionality): v1.2.0
+// TODO: New Feature (Core Funcionality): v1.3.0
 export class CollisionController extends BaseComponent {
   // readonly CollisionPoints: Array<Vector2>;
 
@@ -11,4 +11,6 @@ export class CollisionController extends BaseComponent {
   }
 
   public Update(): void {}
+
+  public OnCollision(): void {}
 }

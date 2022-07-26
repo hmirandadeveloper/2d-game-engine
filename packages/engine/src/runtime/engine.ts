@@ -1,13 +1,17 @@
-import config from "@engine-config";
+import { Canvas } from "@engine-runtime/canvas";
+import { EngineElement } from "@engine-runtime/engine-element";
 import { SceneController } from "@engine-runtime/scene/scene-controller";
 
-export class Engine {
+export class Engine extends EngineElement {
   private static _INSTANCE: Engine;
 
   readonly SceneController: SceneController;
+  readonly Canvas: Canvas;
 
   private constructor() {
+    super();
     this.SceneController = SceneController.GetInstance();
+    this.Canvas = Canvas.GetInstance();
   }
 
   public static GetInstance(): Engine {
@@ -19,24 +23,8 @@ export class Engine {
   }
 
   public Start(): void {
-    this.ValidateConfig();
+    this.Canvas.ValidateCanvas();
     this.Update();
-  }
-
-  private ValidateConfig(): void {
-    if (
-      config.canvas.width <= 0 ||
-      config.canvas.width % config.tile.size !== 0
-    ) {
-      throw new Error("Invalid canvas width");
-    }
-
-    if (
-      config.canvas.heigth <= 0 ||
-      config.canvas.heigth % config.tile.size !== 0
-    ) {
-      throw new Error("Invalid canvas height");
-    }
   }
 
   private Update(): void {

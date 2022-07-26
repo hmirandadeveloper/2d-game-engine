@@ -1,27 +1,18 @@
 import { Tile } from "./tile";
-import config from "@engine-config";
 import { Renderer } from "./renderer";
 import { RenderLayers } from "./render-layer";
+import { Canvas } from "@engine-runtime/canvas";
 import { Vector2 } from "@engine-runtime/utils/vector2";
 
 export class RenderOrchestrator {
   private static _INSTANCE: RenderOrchestrator;
-
-  readonly Canvas: HTMLCanvasElement;
-  readonly CanvasContext: CanvasRenderingContext2D;
+  readonly Canvas: Canvas;
 
   private _renderables: Map<RenderLayers, Array<CallableFunction>>;
 
   private constructor() {
-    this.Canvas = this.GetCanvas();
-    this.Canvas.width = config.canvas.width;
-    this.Canvas.height = config.canvas.heigth;
-    this.Canvas.style.setProperty("--scale", config.canvas.scale);
     this._renderables = new Map<RenderLayers, Array<CallableFunction>>();
-
-    this.CanvasContext = <CanvasRenderingContext2D>(
-      this.Canvas.getContext(config.canvas.context)
-    );
+    this.Canvas = Canvas.GetInstance();
   }
 
   public static GetInstance(): RenderOrchestrator {
@@ -31,6 +22,7 @@ export class RenderOrchestrator {
 
     return RenderOrchestrator._INSTANCE;
   }
+
   public LoadRenderables(renderables: Array<Renderer>): void {
     this._renderables = new Map<RenderLayers, Array<CallableFunction>>();
     renderables
@@ -79,7 +71,12 @@ export class RenderOrchestrator {
   }
 
   public Update(): void {
-    this.CanvasContext.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+    this.Canvas.CanvasContext.clearRect(
+      0,
+      0,
+      this.Canvas.CanvasElement.width,
+      this.Canvas.CanvasElement.height
+    );
 
     this._renderables
       .get(RenderLayers.FLOOR_LAYER)
@@ -98,17 +95,5 @@ export class RenderOrchestrator {
       ?.forEach((drawCallbacks) => {
         drawCallbacks();
       });
-  }
-
-  private GetCanvas(): HTMLCanvasElement {
-    const canvas: HTMLCanvasElement = <HTMLCanvasElement>(
-      document.getElementById(config.canvas.id)
-    );
-
-    if (!canvas) {
-      throw new Error(`No canvas element with ID: '${config.canvas.id}' found`);
-    }
-
-    return canvas;
   }
 }

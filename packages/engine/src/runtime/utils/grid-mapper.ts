@@ -1,8 +1,8 @@
-import config from "@engine-config";
 import { Vector2 } from "@engine-runtime/utils/vector2";
+import { Config } from "config/config";
 
 export class GridMapper {
-  static readonly GRID_PIXELS_SCALE = config.tile.size;
+  static readonly GRID_PIXELS_SCALE = Config.GetInstance().Parameters.tile.size;
 
   static PixelsCoordsFromGrid(gridCoords: Vector2): Vector2 {
     return new Vector2(

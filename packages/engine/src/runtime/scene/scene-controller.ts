@@ -31,6 +31,10 @@ export class SceneController {
 
   public AddScene(scene: Scene): void {
     this._scenes.set(scene.Name, scene);
+
+    if (this._currentScene === Scene.EMPTY_SCENE) {
+      this._currentScene = scene;
+    }
   }
 
   public CreateScene(sceneKey: string): void {
@@ -53,11 +57,6 @@ export class SceneController {
   public Update(): void {
     if (!this.Scenes.size) {
       return;
-    }
-
-    if (this._currentScene === Scene.EMPTY_SCENE) {
-      const [firstValue] = this._scenes.values();
-      this.SetScene(firstValue.Name);
     }
 
     this._currentScene.Update();

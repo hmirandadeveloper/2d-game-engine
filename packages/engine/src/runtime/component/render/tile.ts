@@ -1,4 +1,4 @@
-import { Scene } from "@engine-runtime/scene/scene";
+import { Camera } from "@engine-runtime/camera";
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { GridMapper } from "@engine-runtime/utils/grid-mapper";
 import { TileSet } from "@engine-runtime/component/render/tile-set";
@@ -8,10 +8,12 @@ import { RenderOrchestrator } from "@engine-runtime/component/render/render-orch
 export class Tile {
   readonly Image: CanvasImageSource;
   readonly Coords: Vector2;
+  readonly RenderOrchestrator: RenderOrchestrator;
 
   private readonly PixelCoords: Vector2;
 
   private _renderLayer: RenderLayers;
+  private _camera: Camera;
 
   get RenderLayers(): RenderLayers {
     return this._renderLayer;
@@ -30,34 +32,31 @@ export class Tile {
     this.Coords = coords;
     this.PixelCoords = GridMapper.PixelsCoordsFromGrid(coords);
     this._renderLayer = renderLayer;
+    this.RenderOrchestrator = RenderOrchestrator.GetInstance();
+    this._camera = Camera.GetInstance();
   }
 
   public Draw(
     relativeGridPosition: Vector2,
     renderGridPosition: Vector2
   ): void {
-    // TODO: New Feature (Performance Optimization): v1.2.0
-    // if (Scene.CAMERA.IsOccluded(position)) {
-    //   return;
-    // }
+    const gridPosition = Vector2.Sum(relativeGridPosition, renderGridPosition);
 
-    const relativePosition: Vector2 =
-      GridMapper.PixelsCoordsFromGrid(relativeGridPosition);
-    const renderPosition: Vector2 =
-      GridMapper.PixelsCoordsFromGrid(renderGridPosition);
+    if (this._camera.IsOccluded(gridPosition)) {
+      return;
+    }
 
-    RenderOrchestrator.GetInstance().CanvasContext.drawImage(
+    const finalPosition: Vector2 =
+      GridMapper.PixelsCoordsFromGrid(gridPosition);
+
+    this.RenderOrchestrator.Canvas.CanvasContext.drawImage(
       this.Image,
       this.PixelCoords.X,
       this.PixelCoords.Y,
       GridMapper.GRID_PIXELS_SCALE,
       GridMapper.GRID_PIXELS_SCALE,
-      Math.round(
-        renderPosition.X + relativePosition.X + Scene.CAMERA.PixelsPosition.X
-      ),
-      Math.round(
-        renderPosition.Y + relativePosition.Y + Scene.CAMERA.PixelsPosition.Y
-      ),
+      Math.round(finalPosition.X + this._camera.PixelsPosition.X),
+      Math.round(finalPosition.Y + this._camera.PixelsPosition.Y),
       GridMapper.GRID_PIXELS_SCALE,
       GridMapper.GRID_PIXELS_SCALE
     );

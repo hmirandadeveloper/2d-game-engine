@@ -46,6 +46,17 @@ export class Vector2 {
   }
 
   /**
+   * Function to divide the current Vector2 by a divider value
+   * @returns {number}
+   */
+  public Divide(divider: number): Vector2 {
+    this._x /= divider;
+    this._y /= divider;
+
+    return this;
+  }
+
+  /**
    * Function to calculate the magnitudo of the current Vector2
    * @returns {number}
    */

@@ -12,13 +12,13 @@
     },
 
     "animation": {
-        "durationRate": 2,
-        "velocity": 0.06
+        "durationRate": 1.2,
+        "velocity": 0.08
     },
 
     "movement": {
-        "maxSpeed": 10,
-        "acceleration": 2
+        "maxSpeed": 15,
+        "acceleration": 3
     },
 
     "scene": {

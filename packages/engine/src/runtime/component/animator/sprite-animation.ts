@@ -1,6 +1,7 @@
-import config from "@engine-config";
+import { EngineElement } from "@engine-runtime/engine-element";
+import { Config } from "config/config";
 
-export class SpriteAnimation {
+export class SpriteAnimation extends EngineElement {
   static readonly SIMPLE_IDLE_ANIMATION: SpriteAnimation = new SpriteAnimation(
     "idle_front"
   );
@@ -20,8 +21,10 @@ export class SpriteAnimation {
     name: string,
     sequence: Array<number> = [0],
     audioFileName: string = "",
-    durationRate: number = config.animation.durationRate
+    durationRate: number = Config.GetInstance().Parameters.animation
+      .durationRate
   ) {
+    super();
     this.Name = name;
     this.Sequence = sequence;
     this._currentSequenceIndex = sequence[0];
@@ -30,8 +33,8 @@ export class SpriteAnimation {
 
     if (audioFileName.trim().length) {
       this.Audio = new Audio(
-        `${config.assets.src}/sounds/${audioFileName.trim()}.${
-          config.assets.soundExtension
+        `${this.Config.Parameters.assets.src}/sounds/${audioFileName.trim()}.${
+          this.Config.Parameters.assets.soundExtension
         }`
       );
 
@@ -41,7 +44,7 @@ export class SpriteAnimation {
        * https://developer.mozilla.org/en-US/docs/Web/Guide/Audio_and_video_delivery/WebAudio_playbackRate_explained
        */
       this.Audio.playbackRate = Math.min(
-        Math.max((config.animation.velocity * 100) / 1.8, 0.5),
+        Math.max((this.Config.Parameters.animation.velocity * 100) / 1.8, 0.5),
         4
       );
     }

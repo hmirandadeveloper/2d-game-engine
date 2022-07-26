@@ -6,4 +6,4 @@ import "@assets-scripts/main-scene-setup";
 
 // Custom Scripts Files - SECTION END
 
-EngineRuntimeFacade.ENGINE.Start();
+EngineRuntimeFacade.GetInstance().Engine.Start();

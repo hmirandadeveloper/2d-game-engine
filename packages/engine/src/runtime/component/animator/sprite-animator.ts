@@ -1,4 +1,3 @@
-import config from "@engine-config";
 import { SpriteAnimation } from "./sprite-animation";
 import { State } from "@engine-runtime/component/fsm/state";
 import { GameObject } from "@engine-runtime/scene/game-object";
@@ -9,7 +8,7 @@ import { BaseComponent } from "@engine-runtime/component/base-component";
 import { FiniteStateMachine } from "@engine-runtime/component/fsm/finite-state-machine";
 
 export class SpriteAnimator extends BaseComponent {
-  readonly Velocity: number = config.animation.velocity;
+  readonly Velocity: number = this.Config.Parameters.animation.velocity;
   readonly FiniteStateMachine: FiniteStateMachine;
 
   private _renderer: Renderer;

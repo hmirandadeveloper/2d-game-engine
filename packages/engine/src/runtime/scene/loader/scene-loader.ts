@@ -1,25 +1,19 @@
-import config from "@engine-config";
 import { Scene } from "@engine-runtime/scene/scene";
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { GameObject } from "@engine-runtime/scene/game-object";
-import { Mover } from "@engine-runtime/component/movement/mover";
 import { TileSet } from "@engine-runtime/component/render/tile-set";
 import { Renderer } from "@engine-runtime/component/render/renderer";
-import { IEvaluable } from "@engine-runtime/component/fsm/evaluable.h";
 import { SceneController } from "@engine-runtime/scene/scene-controller";
+import { CharacterFactory } from "@engine-runtime/factory/character.factory";
 import { RenderEntity } from "@engine-runtime/component/render/render-entity";
-import { InputController } from "@engine-runtime/component/input/input-controller";
-import { SpriteAnimator } from "@engine-runtime/component/animator/sprite-animator";
-import { SpriteAnimation } from "@engine-runtime/component/animator/sprite-animation";
 import { MapPrefabModel } from "@engine-runtime/scene/loader/models/map-prefab.model";
 import { ScenePrefabModel } from "@engine-runtime/scene/loader/models/scene-prefab.model";
 import { TileSetPrefabModel } from "@engine-runtime/scene/loader/models/tile-set-prefab.model";
-import { CharacterPrefabModel } from "@engine-runtime/scene/loader/models/character-prefab.model";
+import { EngineElement } from "@engine-runtime/engine-element";
 
-export class SceneLoader {
+export class SceneLoader extends EngineElement {
   private static _INSTANCE: SceneLoader;
 
-  private _characterPrefabs: Map<string, CharacterPrefabModel>;
   private _tileSetPrefabs: Map<string, TileSetPrefabModel>;
   private _mapPrefab: MapPrefabModel | null;
 
@@ -33,7 +27,7 @@ export class SceneLoader {
   }
 
   private constructor() {
-    this._characterPrefabs = new Map<string, CharacterPrefabModel>();
+    super();
     this._tileSetPrefabs = new Map<string, TileSetPrefabModel>();
     this._mapPrefab = null;
 
@@ -49,50 +43,37 @@ export class SceneLoader {
   }
 
   public async LoadScene(scenePrefab: ScenePrefabModel): Promise<void> {
-    this.ValidateTileSets();
-    this.ValidateCharaceters(scenePrefab);
+    this.ValidateTileSets(scenePrefab);
 
     const scene = new Scene(scenePrefab.name);
     await this.LoadTileSetPrefabs(scene);
 
     if (scenePrefab.backgroundAudioFileName.trim().length) {
       scene.BackgroundAudio.src = `${
-        config.assets.src
+        this.Config.Parameters.assets.src
       }/sounds/${scenePrefab.backgroundAudioFileName.trim()}.${
-        config.assets.soundExtension
+        this.Config.Parameters.assets.soundExtension
       }`;
     }
+
     this.LoadMapPrefab(scene);
-    this.LoadCharactersPrefabs(scenePrefab, scene);
 
     SceneController.GetInstance().AddScene(scene);
-    SceneController.GetInstance().SetScene(scene.Name);
-  }
 
-  public AddCharacter(characterPrefab: CharacterPrefabModel): void {
-    this._characterPrefabs.set(characterPrefab.name, characterPrefab);
+    this.LoadCharacters(scenePrefab);
+
+    SceneController.GetInstance().CurrentScene.Start();
   }
 
   public AddTileSet(tileSetPrefab: TileSetPrefabModel): void {
     this._tileSetPrefabs.set(tileSetPrefab.name, tileSetPrefab);
   }
 
-  private ValidateTileSets(): void {
-    if (this._tileSetPrefabs.size !== this._characterPrefabs.size + 1) {
+  private ValidateTileSets(scenePrefabModel: ScenePrefabModel): void {
+    if (this._tileSetPrefabs.size !== scenePrefabModel.tileSetKeyNames.length) {
       throw new Error(
         `Incompatible amount of Tile Sets (${this._tileSetPrefabs.size}) 
-        regarding the amount requested by the Scene's elements (${
-          this._characterPrefabs.size + 1
-        })`
-      );
-    }
-  }
-
-  private ValidateCharaceters(scene: ScenePrefabModel): void {
-    if (scene.characters.length !== this._characterPrefabs.size) {
-      throw new Error(
-        `Incompatible amount of Characters (${this._characterPrefabs.size}) 
-        regarding the amount requested by the Scene: ${scene.name} (${scene.characters.length})`
+        regarding the amount requested by the Scene's elements (${scenePrefabModel.tileSetKeyNames.length})`
       );
     }
   }
@@ -101,7 +82,7 @@ export class SceneLoader {
     this._tileSetPrefabs.forEach((tileSetPrefab) => {
       const tileSet: TileSet = new TileSet(
         tileSetPrefab.name,
-        `${config.assets.src}/${tileSetPrefab.imageSrc}`
+        `${this.Config.Parameters.assets.src}/${tileSetPrefab.imageSrc}`
       );
       tileSetPrefab.layers.forEach((tileSetPrefabLayer) => {
         tileSet.SetTileLayer(
@@ -151,115 +132,16 @@ export class SceneLoader {
     });
   }
 
-  private LoadCharactersPrefabs(
-    scenePrefab: ScenePrefabModel,
-    scene: Scene
-  ): void {
-    this._characterPrefabs.forEach((characterPrefab) => {
-      const sceneCharacterPrefab = scenePrefab.characters.find(
-        (sceneCharacterPrefab) =>
-          sceneCharacterPrefab.key === characterPrefab.name
+  private LoadCharacters(scenePrefab: ScenePrefabModel): void {
+    const characterFactory: CharacterFactory = CharacterFactory.GetInstance();
+
+    scenePrefab.characters.forEach((characterPrefab) => {
+      characterFactory.CreateCharacter(
+        characterPrefab.key,
+        scenePrefab.tileSetKeyNames[characterPrefab.tileSetKey],
+        characterPrefab.isPlayer,
+        new Vector2(characterPrefab.position.x, characterPrefab.position.y)
       );
-      const gameObject: GameObject = new GameObject(
-        characterPrefab.name,
-        new Vector2(
-          sceneCharacterPrefab?.position.x,
-          sceneCharacterPrefab?.position.y
-        )
-      );
-
-      scene.AddGameObject(gameObject);
-
-      if (sceneCharacterPrefab?.isPlayer) {
-        const inputController: InputController = new InputController(
-          gameObject
-        );
-        gameObject.AddComponent(inputController);
-
-        scene.PlayerKey = characterPrefab.name;
-      }
-
-      const tileSet: TileSet = <TileSet>(
-        this._tileSets.get(characterPrefab.spriteKey)
-      );
-
-      const renderer: Renderer = new Renderer(gameObject);
-      gameObject.AddComponent(renderer);
-
-      characterPrefab.sprites.forEach((characterPrefabSpriteModel, index) => {
-        const renderEntity: RenderEntity = new RenderEntity(
-          characterPrefab.name,
-          tileSet,
-          new Set<string>(
-            characterPrefabSpriteModel.tiles.map((tile) => tile.key)
-          ),
-          gameObject.GridPosition
-        );
-
-        characterPrefabSpriteModel.tiles.forEach((tilePrefab) => {
-          renderEntity.AddTileRenderMap(
-            tilePrefab.key,
-            new Vector2(tilePrefab.position.x, tilePrefab.position.y)
-          );
-        });
-
-        renderer.AddSprite(index, renderEntity);
-      });
-
-      const mover: Mover = new Mover(gameObject);
-      gameObject.AddComponent(mover);
-
-      const spriteAnimator: SpriteAnimator = new SpriteAnimator(gameObject);
-      gameObject.AddComponent(spriteAnimator);
-
-      characterPrefab.animations.forEach((animationPrefab) => {
-        spriteAnimator.AddAnimation(
-          new SpriteAnimation(
-            animationPrefab.name,
-            animationPrefab.sequence,
-            animationPrefab.name.indexOf("walking") >= 0 ? "footstep" : ""
-          )
-        );
-      });
-
-      this.LoadBasicMoveAnimations(spriteAnimator, mover);
-    });
-  }
-
-  private LoadBasicMoveAnimations(
-    spriteAnimator: SpriteAnimator,
-    mover: Mover
-  ): void {
-    spriteAnimator.CreateAnimationTransition(
-      "idle_front",
-      <IEvaluable>{
-        Evaluate() {
-          return mover.MoveAxis.Y === 0;
-        },
-      },
-      "walking_front"
-    );
-
-    spriteAnimator.CreateAnimationTransition(
-      "idle_back",
-      <IEvaluable>{
-        Evaluate() {
-          return mover.MoveAxis.Y === 0;
-        },
-      },
-      "walking_back"
-    );
-
-    spriteAnimator.CreateAnimationTransition("walking_front", <IEvaluable>{
-      Evaluate() {
-        return mover.MoveAxis.Y > 0;
-      },
-    });
-
-    spriteAnimator.CreateAnimationTransition("walking_back", <IEvaluable>{
-      Evaluate() {
-        return mover.MoveAxis.Y < 0;
-      },
     });
   }
 }
