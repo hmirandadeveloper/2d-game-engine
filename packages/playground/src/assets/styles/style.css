@@ -1,0 +1,23 @@
+body {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111;
+}
+
+.canvas_container {
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+canvas {
+  --scale: 1;
+
+  border: 1px solid #444;
+  background-color: #010101;
+  transform-origin: 0, 0;
+  transform: scale(var(--scale)) translateY(50%);
+  image-rendering: pixelated;
+}

@@ -1,0 +1,76 @@
+{
+    "name": "SCENE_NAME",
+    "tileSet": "building_001",
+    "tiles": [
+        "0,0", "1,0", "2,0", "3,0",
+        "0,1", "1,1", "2,1", "3,1",
+        "0,2", "1,2", "2,2", "3,2",
+        "0,3", "1,3", "2,3", "3,3"
+    ],
+    "renderLines": [
+        {
+            "line": 0,
+            "repeatAmount": 1,  
+            "tileBlocks": 
+            [
+                {"tileId":"0,0", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"1,0", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,0", "startXPos": 21, "repeatAmount": 1}
+            ]
+        },
+
+        {
+            "line": 1, 
+            "repeatAmount": 1, 
+            "tileBlocks": 
+            [
+                {"tileId":"0,1", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"3,0", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,1", "startXPos": 21, "repeatAmount": 1}
+            ]
+        },
+
+        {
+            "line": 2, 
+            "repeatAmount": 1, 
+            "tileBlocks": 
+            [
+                {"tileId":"0,1", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"3,1", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,1", "startXPos": 21, "repeatAmount": 1}
+            ]
+        },
+
+        {
+            "line": 3, 
+            "repeatAmount": 1, 
+            "tileBlocks": 
+            [
+                {"tileId":"0,1", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"3,2", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,1", "startXPos": 21, "repeatAmount": 1}
+            ]
+        },
+
+        {
+            "line": 4, 
+            "repeatAmount": 7, 
+            "tileBlocks": 
+            [
+                {"tileId":"0,1", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"1,1", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,1", "startXPos": 21, "repeatAmount": 1}
+            ]
+        },
+
+        {
+            "line": 11,
+            "repeatAmount": 1,  
+            "tileBlocks": 
+            [
+                {"tileId":"0,2", "startXPos": 0, "repeatAmount": 1}, 
+                {"tileId":"1,2", "startXPos": 1, "repeatAmount": 20}, 
+                {"tileId":"2,2", "startXPos": 21, "repeatAmount": 1}
+            ]}
+    ]
+}

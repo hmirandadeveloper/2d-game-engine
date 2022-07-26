@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "Node",
+    "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@assets-sprites/*": ["assets/images/sprite-sheet/*"],
+      "@assets-tile-sets/*": ["assets/images/tile-sets/*"],
+      "@assets-prefabs/*": ["assets/prefabs/*"],
+      "@assets-audios/*": ["assets/audios/*"],
+      "@assets-scripts/*": ["assets/scripts/*"],
+      "@assets-styles/*": ["assets/styles/*"]
+    }
+  },
+  "include": ["src"]
+}

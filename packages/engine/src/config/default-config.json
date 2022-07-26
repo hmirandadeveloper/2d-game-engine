@@ -1,0 +1,34 @@
+{
+    "canvas": {
+        "id": "app_canvas",
+        "context": "2d",
+        "width": 352,
+        "heigth": 192,
+        "scale": "3"
+    },
+
+    "tile": {
+        "size": 16
+    },
+
+    "animation": {
+        "durationRate": 2,
+        "velocity": 0.06
+    },
+
+    "movement": {
+        "maxSpeed": 10,
+        "acceleration": 2
+    },
+
+    "scene": {
+        "backgroundAudio": {
+            "volume": 0.5
+        }
+    },
+
+    "assets": {
+        "src": "src/assets",
+        "soundExtension": "mp3"
+    }
+}

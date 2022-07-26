@@ -1,0 +1,29 @@
+{
+  "name": "hsm-2d-game-engine",
+  "version": "1.0.0",
+  "description": "Basic Playground to play with the: HSM | Basic 2D Game Engine",
+  "keywords": [
+    "game",
+    "engine",
+    "2d",
+    "rpg",
+    "playground"
+  ],
+  "author": {
+    "name": "Helio Miranda",
+    "email": "h.miranda.developer@gmail.com"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "hsm-2d-rpg-game-engine": "^1.1.0"
+  }
+}
