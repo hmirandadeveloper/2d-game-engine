@@ -135,7 +135,7 @@ export class CharacterFactory {
     spriteAnimator: SpriteAnimator,
     gameObject: GameObject
   ): void {
-    const mover: Mover = <Mover>gameObject.Components.get("Mover");
+    const mover: Mover = <Mover>gameObject.Components.get(Mover.name);
 
     spriteAnimator.CreateAnimationTransition(
       "idle_front",
