@@ -1,8 +1,7 @@
-import { Camera } from "@engine-runtime/camera";
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { GridMapper } from "@engine-runtime/utils/grid-mapper";
 import { TileSet } from "@engine-runtime/component/render/tile-set";
-import { RenderLayers } from "@engine-runtime/component/render/render-layer";
+import { RenderLayer } from "@engine-runtime/component/render/render-layer";
 import { RenderOrchestrator } from "@engine-runtime/component/render/render-orchestrator";
 
 export class Tile {
@@ -12,42 +11,34 @@ export class Tile {
 
   private readonly PixelCoords: Vector2;
 
-  private _renderLayer: RenderLayers;
-  private _camera: Camera;
+  private _renderLayer: RenderLayer;
 
-  get RenderLayers(): RenderLayers {
+  get RenderLayer(): RenderLayer {
     return this._renderLayer;
   }
 
-  public set RenderLayers(renderLayer: RenderLayers) {
+  set RenderLayer(renderLayer: RenderLayer) {
     this._renderLayer = renderLayer;
   }
 
   constructor(
     tileSet: TileSet,
     coords: Vector2,
-    renderLayer: RenderLayers = RenderLayers.FLOOR_LAYER
+    renderLayer: RenderLayer = RenderLayer.FLOOR_LAYER
   ) {
     this.Image = tileSet.Image;
     this.Coords = coords;
     this.PixelCoords = GridMapper.PixelsCoordsFromGrid(coords);
     this._renderLayer = renderLayer;
     this.RenderOrchestrator = RenderOrchestrator.GetInstance();
-    this._camera = Camera.GetInstance();
   }
 
   public Draw(
-    relativeGridPosition: Vector2,
-    renderGridPosition: Vector2
+    combinedGridPosition: Vector2,
+    cameraPixelsPosition: Vector2
   ): void {
-    const gridPosition = Vector2.Sum(relativeGridPosition, renderGridPosition);
-
-    if (this._camera.IsOccluded(gridPosition)) {
-      return;
-    }
-
-    const finalPosition: Vector2 =
-      GridMapper.PixelsCoordsFromGrid(gridPosition);
+    const combinedPixelsPosition: Vector2 =
+      GridMapper.PixelsCoordsFromGrid(combinedGridPosition);
 
     this.RenderOrchestrator.Canvas.CanvasContext.drawImage(
       this.Image,
@@ -55,8 +46,8 @@ export class Tile {
       this.PixelCoords.Y,
       GridMapper.GRID_PIXELS_SCALE,
       GridMapper.GRID_PIXELS_SCALE,
-      Math.round(finalPosition.X + this._camera.PixelsPosition.X),
-      Math.round(finalPosition.Y + this._camera.PixelsPosition.Y),
+      Math.round(combinedPixelsPosition.X + cameraPixelsPosition.X),
+      Math.round(combinedPixelsPosition.Y + cameraPixelsPosition.Y),
       GridMapper.GRID_PIXELS_SCALE,
       GridMapper.GRID_PIXELS_SCALE
     );

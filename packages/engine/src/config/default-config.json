@@ -30,5 +30,16 @@
     "assets": {
         "src": "src/assets",
         "soundExtension": "mp3"
+    },
+
+    "event": {
+        "prefix": "hsm@2d-engine"
+    },
+
+    "trigger": {
+        "range": {
+            "x": 2,
+            "y": 2
+        }
     }
 }

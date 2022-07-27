@@ -1,7 +1,7 @@
 import { Vector2 } from "@engine-runtime/utils/vector2";
 import { Tile } from "@engine-runtime/component/render/tile";
 import { GridMapper } from "@engine-runtime/utils/grid-mapper";
-import { RenderLayers } from "@engine-runtime/component/render/render-layer";
+import { RenderLayer } from "@engine-runtime/component/render/render-layer";
 
 export class TileSet {
   readonly Name: string;
@@ -43,11 +43,11 @@ export class TileSet {
     return tiles;
   }
 
-  public SetTileLayer(tileKey: string, renderLayer: RenderLayers): void {
+  public SetTileLayer(tileKey: string, renderLayer: RenderLayer): void {
     let tile = this.Tiles.get(tileKey);
 
     if (tile) {
-      tile.RenderLayers = renderLayer;
+      tile.RenderLayer = renderLayer;
     }
   }
 

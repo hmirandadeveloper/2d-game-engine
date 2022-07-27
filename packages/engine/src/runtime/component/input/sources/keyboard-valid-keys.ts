@@ -6,7 +6,7 @@ export enum KeyboardValidKeys {
   ARROW_UP = "ArrowUp",
   D = "KeyD",
   S = "KeyS",
-  SPACE = "Space",
+  X = "KeyX",
   ESC = "escape",
   W = "KeyW",
 }

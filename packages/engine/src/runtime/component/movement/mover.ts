@@ -3,6 +3,8 @@ import { GameObject } from "@engine-runtime/scene/game-object";
 import { GameInput } from "@engine-runtime/component/input/input";
 import { BaseComponent } from "@engine-runtime/component/base-component";
 import { InputController } from "@engine-runtime/component/input/input-controller";
+import { RenderOrchestrator } from "@engine-runtime/component/render/render-orchestrator";
+import { Collider } from "@engine-runtime/component/collision/collider";
 
 export class Mover extends BaseComponent {
   static readonly MOVEMENT_INPUTS: Array<GameInput> = [
@@ -13,6 +15,7 @@ export class Mover extends BaseComponent {
   ];
 
   readonly InputController: InputController;
+  readonly RenderOrchestrator: RenderOrchestrator;
   readonly MaxTravelDistance: number;
 
   private _maxSpeed: number;
@@ -49,6 +52,8 @@ export class Mover extends BaseComponent {
     );
 
     this.MaxTravelDistance = 1;
+    this.RenderOrchestrator = RenderOrchestrator.GetInstance();
+
     this._moveAxis = new Vector2();
 
     this._maxSpeed = this.Config.Parameters.movement.maxSpeed / 1000;
@@ -90,6 +95,10 @@ export class Mover extends BaseComponent {
       this._currentSpeed = 0;
       this._travelledDistance = 0;
       this._moveAxis.Clear();
+    }
+
+    if ((<Collider>this.Owner.Components.get(Collider.name)).HasCollision) {
+      return;
     }
 
     if (this._moveAxis.Y !== 0) {

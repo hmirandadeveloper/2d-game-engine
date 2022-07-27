@@ -10,6 +10,7 @@ import { MapPrefabModel } from "@engine-runtime/scene/loader/models/map-prefab.m
 import { ScenePrefabModel } from "@engine-runtime/scene/loader/models/scene-prefab.model";
 import { TileSetPrefabModel } from "@engine-runtime/scene/loader/models/tile-set-prefab.model";
 import { EngineElement } from "@engine-runtime/engine-element";
+import { RenderLayer } from "@engine-runtime/component/render/render-layer";
 
 export class SceneLoader extends EngineElement {
   private static _INSTANCE: SceneLoader;
@@ -82,16 +83,31 @@ export class SceneLoader extends EngineElement {
         tileSetPrefab.name,
         `${this.Config.Parameters.assets.src}/${tileSetPrefab.imageSrc}`
       );
+      scene.AddTileSet(tileSet);
+
+      tileSetPrefab.layers.forEach((tileSetPrefabLayer) => {
+        tileSet.SetTileLayer(
+          tileSetPrefabLayer.tileKey,
+          RenderLayer.COLLISION_LAYER
+        );
+      });
+
+      this._tileSets.set(tileSetPrefab.name, tileSet);
+    });
+    await scene.Setup();
+    this.LoadTileRenderLayer();
+  }
+
+  private LoadTileRenderLayer() {
+    this._tileSetPrefabs.forEach((tileSetPrefab) => {
+      const tileSet: TileSet = <TileSet>this._tileSets.get(tileSetPrefab.name);
       tileSetPrefab.layers.forEach((tileSetPrefabLayer) => {
         tileSet.SetTileLayer(
           tileSetPrefabLayer.tileKey,
           tileSetPrefabLayer.layer
         );
       });
-      scene.AddTileSet(tileSet);
-      this._tileSets.set(tileSetPrefab.name, tileSet);
     });
-    await scene.Setup();
   }
 
   private LoadMapPrefab(scene: Scene): void {

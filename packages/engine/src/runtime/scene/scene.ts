@@ -27,7 +27,7 @@ export class Scene extends EngineElement {
     this._playerKey = playerKey;
   }
 
-  public get AvailablePositions(): Array<Vector2> {
+  public get TileMatrixPositions(): Array<Vector2> {
     return this._availablePositions;
   }
 
@@ -75,6 +75,8 @@ export class Scene extends EngineElement {
       throw new Error("No player defined");
     }
 
+    this.Camera.Start();
+
     this.Camera.Target = <GameObject>(
       this.GameObjects.get(GameObject.FormatName(this._playerKey))
     );
@@ -109,5 +111,5 @@ export class Scene extends EngineElement {
   }
 
   // TODO: New Feature (Core Funcionality): v1.3.0
-  // private LoadAvailablePositions(): void {}
+  // private LoadTileMatrixPositions(): void {}
 }

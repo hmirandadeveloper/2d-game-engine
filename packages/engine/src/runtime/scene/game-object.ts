@@ -44,14 +44,6 @@ export class GameObject {
     return this;
   }
 
-  // public AddComponent<TComponent extends IComponent>(
-  //   type: new (owner: GameObject) => TComponent
-  // ): GameObject {
-  //   const component: TComponent = new type(this);
-  //   this._components.set(component.Name, component);
-  //   return this;
-  // }
-
   public Update(): void {
     this._components.forEach((component) => {
       component.Update();

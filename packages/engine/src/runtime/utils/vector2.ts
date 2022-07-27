@@ -69,7 +69,7 @@ export class Vector2 {
    * @returns {string}
    */
   public ToString(): string {
-    return `${this._x},${this._y}`;
+    return `${this._x.toFixed(0)},${this._y.toFixed(0)}`;
   }
 
   /**

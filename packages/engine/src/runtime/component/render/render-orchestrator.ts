@@ -1,18 +1,36 @@
 import { Tile } from "./tile";
 import { Renderer } from "./renderer";
-import { RenderLayers } from "./render-layer";
+import { RenderLayer } from "./render-layer";
+import { Camera } from "@engine-runtime/camera";
 import { Canvas } from "@engine-runtime/canvas";
 import { Vector2 } from "@engine-runtime/utils/vector2";
+import { GameObject } from "@engine-runtime/scene/game-object";
+import { GameObjectLayer } from "@engine-runtime/scene/game-object-layer";
 
 export class RenderOrchestrator {
   private static _INSTANCE: RenderOrchestrator;
   readonly Canvas: Canvas;
 
-  private _renderables: Map<RenderLayers, Array<CallableFunction>>;
+  private _camera: Camera;
+  private _renderables: Map<RenderLayer, Array<CallableFunction>>;
+  private _collisionPoints: Set<string>;
+  private _characters: Map<string, GameObject>;
+
+  get Characters(): Map<string, GameObject> {
+    return this._characters;
+  }
+
+  get CollisionPoints(): Set<string> {
+    return this._collisionPoints;
+  }
 
   private constructor() {
-    this._renderables = new Map<RenderLayers, Array<CallableFunction>>();
     this.Canvas = Canvas.GetInstance();
+
+    this._renderables = new Map<RenderLayer, Array<CallableFunction>>();
+    this._collisionPoints = new Set<string>();
+    this._camera = Camera.GetInstance();
+    this._characters = new Map<string, GameObject>();
   }
 
   public static GetInstance(): RenderOrchestrator {
@@ -24,7 +42,9 @@ export class RenderOrchestrator {
   }
 
   public LoadRenderables(renderables: Array<Renderer>): void {
-    this._renderables = new Map<RenderLayers, Array<CallableFunction>>();
+    this._collisionPoints = new Set<string>();
+
+    this._renderables = new Map<RenderLayer, Array<CallableFunction>>();
     renderables
       .sort((a: Renderer, b: Renderer) => {
         return a.Owner.GridPosition.Y - b.Owner.GridPosition.Y;
@@ -44,27 +64,37 @@ export class RenderOrchestrator {
         const tile: Tile | null =
           renderer.CurrentSprite!.Tiles.get(tileCoord) ?? null;
 
-        if (tile === null) {
+        const combinedGridPosition: Vector2 = Vector2.Sum(
+          renderer.CurrentSprite!.RelativeGridPosition,
+          renderPosition
+        );
+
+        if (tile === null || this._camera.IsOccluded(combinedGridPosition)) {
           return;
         }
 
-        if (!this._renderables.has(tile.RenderLayers)) {
-          this._renderables.set(tile.RenderLayers, [
+        if (
+          tile.RenderLayer === RenderLayer.COLLISION_LAYER &&
+          renderer.Owner.Layer !== GameObjectLayer.PLAYER
+        ) {
+          this._collisionPoints.add(combinedGridPosition.ToString());
+        }
+
+        if (renderer.Owner.Layer === GameObjectLayer.CHARACTER) {
+          this._characters.set(combinedGridPosition.ToString(), renderer.Owner);
+        }
+
+        if (!this._renderables.has(tile.RenderLayer)) {
+          this._renderables.set(tile.RenderLayer, [
             () => {
-              tile.Draw(
-                renderer.CurrentSprite!.RelativeGridPosition,
-                renderPosition
-              );
+              tile.Draw(combinedGridPosition, this._camera.PixelsPosition);
             },
           ]);
           return;
         }
 
-        this._renderables.get(tile.RenderLayers)?.push(() => {
-          tile.Draw(
-            renderer.CurrentSprite!.RelativeGridPosition,
-            renderPosition
-          );
+        this._renderables.get(tile.RenderLayer)?.push(() => {
+          tile.Draw(combinedGridPosition, this._camera.PixelsPosition);
         });
       }
     );
@@ -72,28 +102,24 @@ export class RenderOrchestrator {
 
   public Update(): void {
     this.Canvas.CanvasContext.clearRect(
-      0,
-      0,
+      Vector2.ZERO.X,
+      Vector2.ZERO.X,
       this.Canvas.CanvasElement.width,
       this.Canvas.CanvasElement.height
     );
 
+    this._renderables.get(RenderLayer.FLOOR_LAYER)?.forEach((drawCallbacks) => {
+      drawCallbacks();
+    });
+
     this._renderables
-      .get(RenderLayers.FLOOR_LAYER)
+      .get(RenderLayer.COLLISION_LAYER)
       ?.forEach((drawCallbacks) => {
         drawCallbacks();
       });
 
-    this._renderables
-      .get(RenderLayers.COLLISION_LAYER)
-      ?.forEach((drawCallbacks) => {
-        drawCallbacks();
-      });
-
-    this._renderables
-      .get(RenderLayers.ABOVE_LAYER)
-      ?.forEach((drawCallbacks) => {
-        drawCallbacks();
-      });
+    this._renderables.get(RenderLayer.ABOVE_LAYER)?.forEach((drawCallbacks) => {
+      drawCallbacks();
+    });
   }
 }

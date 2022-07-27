@@ -4,4 +4,5 @@ export interface IInputSourceAdapter {
   readonly Name: string;
   Setup(): void;
   GameOutput(): GameInput;
+  Clear(): void;
 }

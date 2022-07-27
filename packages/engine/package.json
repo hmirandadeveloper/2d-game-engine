@@ -1,42 +1,36 @@
 {
   "name": "hsm-2d-rpg-game-engine",
-
-  "version": "1.5.0",
-
+  "version": "1.7.0",
   "description": "Basic 2D RPG game engine",
-
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/hmirandadeveloper/2d-game-engine.git"
   },
-
-  "keywords": ["hsm", "engine-2d", "rpg", "game"],
-
+  "keywords": [
+    "hsm",
+    "engine-2d",
+    "rpg",
+    "game"
+  ],
   "author": "Helio Miranda",
   "license": "ISC",
-
   "bugs": {
     "url": "https://github.com/hmirandadeveloper/2d-game-engine/issues"
   },
   "homepage": "https://github.com/hmirandadeveloper/2d-game-engine#readme",
-
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-
   "scripts": {
     "build": "tsc && tsc-alias"
   },
-
   "files": [
     "dist/",
     "src/"
   ],
-
   "exports": {
     ".": "./dist/index.js"
   },
-
   "devDependencies": {
     "tsc-alias": "^1.7.0",
     "typescript": "^4.5.4"

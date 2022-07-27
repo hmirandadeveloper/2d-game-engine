@@ -5,6 +5,8 @@ export interface ConfigModel {
   movement: ConfigMovementModel;
   scene: ConfigSceneModel;
   assets: ConfigAssetModel;
+  event: ConfigEventModel;
+  trigger: ConfigTriggerModel;
 }
 
 interface ConfigCanvasModel {
@@ -40,4 +42,17 @@ interface BackgroundAudioModel {
 interface ConfigAssetModel {
   src: string;
   soundExtension: string;
+}
+
+interface ConfigEventModel {
+  prefix: string;
+}
+
+interface ConfigTriggerModel {
+  range: ConfigTriggerPositionModel;
+}
+
+interface ConfigTriggerPositionModel {
+  x: number;
+  y: number;
 }

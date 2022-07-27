@@ -1,11 +1,13 @@
 import characterBPJSON from "./character.bp.json";
 import { Scene } from "@engine-runtime/scene/scene";
 import { Vector2 } from "@engine-runtime/utils/vector2";
+import { EngineElement } from "@engine-runtime/engine-element";
 import { GameObject } from "@engine-runtime/scene/game-object";
 import { Mover } from "@engine-runtime/component/movement/mover";
 import { TileSet } from "@engine-runtime/component/render/tile-set";
 import { Renderer } from "@engine-runtime/component/render/renderer";
 import { IEvaluable } from "@engine-runtime/component/fsm/evaluable.h";
+import { Collider } from "@engine-runtime/component/collision/collider";
 import { SceneController } from "@engine-runtime/scene/scene-controller";
 import { GameObjectLayer } from "@engine-runtime/scene/game-object-layer";
 import { RenderEntity } from "@engine-runtime/component/render/render-entity";
@@ -13,8 +15,9 @@ import { CharacterBPModel } from "@engine-runtime/factory/character-bp.model";
 import { InputController } from "@engine-runtime/component/input/input-controller";
 import { SpriteAnimator } from "@engine-runtime/component/animator/sprite-animator";
 import { SpriteAnimation } from "@engine-runtime/component/animator/sprite-animation";
+import { ActionController } from "@engine-runtime/component/action/action-controller";
 
-export class CharacterFactory {
+export class CharacterFactory extends EngineElement {
   private static _INSTANCE: CharacterFactory;
 
   private static readonly CHARACTER_BP: CharacterBPModel = <CharacterBPModel>(
@@ -28,7 +31,9 @@ export class CharacterFactory {
     Vector2.ONE,
   ];
 
-  private constructor() {}
+  private constructor() {
+    super();
+  }
 
   public static GetInstance(): CharacterFactory {
     if (!CharacterFactory._INSTANCE) {
@@ -42,11 +47,15 @@ export class CharacterFactory {
     name: string,
     tileSetKey: string,
     isPlayer: boolean = false,
-    position: Vector2 = new Vector2()
-  ): void {
+    position: Vector2 = new Vector2(),
+    triggerRange: Vector2 = new Vector2(
+      this.Config.Parameters.trigger.range.x,
+      this.Config.Parameters.trigger.range.y
+    )
+  ): GameObject {
     const gameObject = new GameObject(
       name,
-      GameObjectLayer.CHARACTER,
+      isPlayer ? GameObjectLayer.PLAYER : GameObjectLayer.CHARACTER,
       position
     );
 
@@ -61,9 +70,11 @@ export class CharacterFactory {
     }
 
     this.SetInputController(gameObject, isPlayer);
-    this.SetMover(gameObject);
+    this.SetMover(gameObject, isPlayer, triggerRange);
     this.SetRenderer(gameObject, tileSet, name);
     this.SetSpriteAnimator(gameObject);
+
+    return gameObject;
   }
 
   private SetRenderer(
@@ -79,11 +90,33 @@ export class CharacterFactory {
   private SetInputController(gameObject: GameObject, isPlayer: boolean): void {
     if (isPlayer) {
       gameObject.AddComponent(new InputController(gameObject));
+      this.SetActionController(gameObject);
     }
   }
 
-  private SetMover(gameObject: GameObject): void {
+  private SetMover(
+    gameObject: GameObject,
+    isPlayer: boolean,
+    triggerRange: Vector2
+  ): void {
     gameObject.AddComponent(new Mover(gameObject));
+
+    if (isPlayer) {
+      this.SetPlayerCollider(gameObject, triggerRange);
+    }
+  }
+
+  private SetPlayerCollider(
+    gameObject: GameObject,
+    triggerRange: Vector2
+  ): void {
+    const collider: Collider = new Collider(gameObject);
+    gameObject.AddComponent(collider);
+    collider.TriggerRange = triggerRange;
+  }
+
+  private SetActionController(gameObject: GameObject): void {
+    gameObject.AddComponent(new ActionController(gameObject));
   }
 
   private SetSpriteAnimator(gameObject: GameObject): void {

@@ -44,7 +44,7 @@ export class Keyboard implements IInputSourceAdapter {
         return GameInput.RIGHT;
       case KeyboardValidKeys.D:
         return GameInput.RIGHT;
-      case KeyboardValidKeys.SPACE:
+      case KeyboardValidKeys.X:
         return GameInput.ACTION;
       case KeyboardValidKeys.ESC:
         return GameInput.ESCAPE;
@@ -52,5 +52,9 @@ export class Keyboard implements IInputSourceAdapter {
       default:
         return GameInput.NONE;
     }
+  }
+
+  public Clear(): void {
+    this._keyPressed = "";
   }
 }
