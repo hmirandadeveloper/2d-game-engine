@@ -7,10 +7,18 @@ import hugoZombieTileSetPrefab from "@assets-prefabs/tile-sets/hugo_zombie-ts.js
 import Building001TileSetPrefab from "@assets-prefabs/tile-sets/building_001-ts.json";
 
 // Scene's Map Prefab
-import mapPrefab from "@assets-prefabs/maps/salon-mp.json";
+// import mapSmPrefab from "@assets-prefabs/maps/salon-mp.json";
+import mapLgPrefab from "@assets-prefabs/maps/salon-lg-mp.json";
 
 // HSM 2D RPG Game Engine
-import { EngineRuntimeFacade, Vector2 } from "hsm-2d-rpg-game-engine";
+import {
+  ActionController,
+  Collider,
+  EngineRuntimeFacade,
+  GameInput,
+  IBehavior,
+  Vector2,
+} from "hsm-2d-rpg-game-engine";
 
 // Load Engine Facade
 const engine: EngineRuntimeFacade = EngineRuntimeFacade.GetInstance();
@@ -30,15 +38,29 @@ engine.SceneLoader.AddTileSet(hugoZombieTileSetPrefab);
 engine.SceneLoader.AddTileSet(Building001TileSetPrefab);
 
 // Set Scene's Map Prefab
-engine.SceneLoader.MapPrefab = mapPrefab;
+engine.SceneLoader.MapPrefab = mapLgPrefab;
 
 // Load Scene's Prefab (Async)
 engine.SceneLoader.LoadScene(scenePrefab).then(() => {
-  engine.CharacterFactory.CreateCharacter(
+  const player = engine.CharacterFactory.CreateCharacter(
     "hugo_zombie_1",
     "hugo_zombie",
     true,
-    new Vector2(16, 8)
+    new Vector2(16, 8),
+    new Vector2(4, 4)
+  );
+
+  (<ActionController>player.Components.get(ActionController.name)).AddAction(
+    GameInput.ACTION,
+    <IBehavior>{
+      Execute() {
+        (<Collider>(
+          player.Components.get(Collider.name)
+        )).CharactersOnTriggerRange.forEach((character) => {
+          console.warn(character.Name);
+        });
+      },
+    }
   );
 
   engine.CharacterFactory.CreateCharacter(
@@ -47,6 +69,6 @@ engine.SceneLoader.LoadScene(scenePrefab).then(() => {
     false,
     new Vector2(1, 6)
   );
-
+  console.warn(engine.SceneController.CurrentScene);
   engine.SceneController.CurrentScene.Start();
 });

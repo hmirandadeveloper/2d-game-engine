@@ -1,5 +1,5 @@
 {
-    "name": "small_salon",
+    "name": "large_salon",
     "tileSet": "building_001",
     "tiles": [
         "0,0", "1,0", "2,0", "3,0",
@@ -54,7 +54,7 @@
 
         {
             "line": 4, 
-            "repeatAmount": 7, 
+            "repeatAmount": 31, 
             "tileBlocks": 
             [
                 {"tileId":"0,1", "startXPos": 0, "repeatAmount": 1}, 
@@ -64,7 +64,7 @@
         },
 
         {
-            "line": 11,
+            "line": 35,
             "repeatAmount": 1,  
             "tileBlocks": 
             [
