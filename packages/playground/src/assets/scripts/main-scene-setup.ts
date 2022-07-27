@@ -33,18 +33,20 @@ engine.SceneLoader.AddTileSet(Building001TileSetPrefab);
 engine.SceneLoader.MapPrefab = mapPrefab;
 
 // Load Scene's Prefab (Async)
-await engine.SceneLoader.LoadScene(scenePrefab);
+engine.SceneLoader.LoadScene(scenePrefab).then(() => {
+  engine.CharacterFactory.CreateCharacter(
+    "hugo_zombie_1",
+    "hugo_zombie",
+    true,
+    new Vector2(16, 8)
+  );
 
-engine.CharacterFactory.CreateCharacter(
-  "weird_hugo_zombie",
-  "hugo_zombie",
-  false,
-  new Vector2(16, 8)
-);
+  engine.CharacterFactory.CreateCharacter(
+    "hugo_zombie_2",
+    "hugo_zombie",
+    false,
+    new Vector2(1, 6)
+  );
 
-engine.CharacterFactory.CreateCharacter(
-  "weird_hugo_zombie_3",
-  "hugo_zombie",
-  false,
-  new Vector2(1, 6)
-);
+  engine.SceneController.CurrentScene.Start();
+});

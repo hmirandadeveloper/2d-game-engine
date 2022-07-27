@@ -57,6 +57,7 @@ export class CharacterFactory {
     scene.AddGameObject(gameObject);
 
     if (isPlayer) {
+      console.warn("aaaaaaaa");
       scene.PlayerKey = name;
     }
 

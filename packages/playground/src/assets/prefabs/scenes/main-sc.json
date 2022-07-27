@@ -4,7 +4,7 @@
     "backgroundAudioFileName": "background_music-au",
     "tileSetKeyNames": ["hugo_boy", "hugo_zombie", "builing_001"],
     "characters": [
-        {"key": "hugo_boy", "tileSetKey": 0, "position": {"x": 0, "y": 0}, "isPlayer": true},
-        {"key": "hugo_zombie", "tileSetKey": 1, "position": {"x": 5, "y": 2}, "isPlayer": false}
+        {"key": "hugo_boy", "tileSetKey": 0, "position": {"x": 12, "y": 8}, "isPlayer": false},
+        {"key": "hugo_zombie_0", "tileSetKey": 1, "position": {"x": 5, "y": 2}, "isPlayer": false}
     ]
 }

@@ -61,8 +61,6 @@ export class SceneLoader extends EngineElement {
     SceneController.GetInstance().AddScene(scene);
 
     this.LoadCharacters(scenePrefab);
-
-    SceneController.GetInstance().CurrentScene.Start();
   }
 
   public AddTileSet(tileSetPrefab: TileSetPrefabModel): void {
