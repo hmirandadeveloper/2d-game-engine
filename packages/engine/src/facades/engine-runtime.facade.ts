@@ -1,9 +1,9 @@
+import { Config } from "config/config";
 import { Engine } from "@engine-runtime/engine";
-import { CharacterFactory } from "@engine-runtime/factory/character.factory";
 import { GameObject } from "@engine-runtime/scene/game-object";
 import { SceneLoader } from "@engine-runtime/scene/loader/scene-loader";
 import { SceneController } from "@engine-runtime/scene/scene-controller";
-import { Config } from "config/config";
+import { CharacterFactory } from "@engine-runtime/factory/character.factory";
 
 export class EngineRuntimeFacade {
   private static _INSTANCE: EngineRuntimeFacade;
